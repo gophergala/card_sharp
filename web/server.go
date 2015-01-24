@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"log"
 	"net/http"
+	"strconv"
 
 	"git.andrewcsellers.com/acsellers/card_sharp/config"
+	"git.andrewcsellers.com/acsellers/card_sharp/lobby"
 	"github.com/acsellers/multitemplate"
 	"github.com/acsellers/platform/controllers"
 	"github.com/acsellers/platform/router"
@@ -18,7 +20,7 @@ func main() {
 func Router() http.Handler {
 	r := router.NewRouter()
 	r.Many(PageCtrl{NewRenderableCtrl("desktop.html")})
-	r.Many(FrontGameCtrl{NewRenderableCtrl("desktop.html")})
+	r.Many(FrontGameCtrl{NewRenderableCtrl("desktop.html"), nil})
 	r.Mount(controllers.AssetModule{
 		AssetLocation: "public",
 	})
@@ -77,12 +79,45 @@ func (pc PageCtrl) Show() router.Result {
 
 type FrontGameCtrl struct {
 	RenderableCtrl
+	*lobby.Lobby
 }
 
 func (FrontGameCtrl) Path() string {
 	return "games"
 }
 
+func (fgc *FrontGameCtrl) PreItem() router.Result {
+	var value string
+	if cookie, err := fgc.Request.Cookie("party-lobby"); err != nil {
+		fgc.Log.Printf("Could not retrieve Cookie: %s\n", err.Error())
+		return router.NotAllowed{
+			Request:  fgc.Request,
+			Fallback: "/games/new",
+		}
+	} else {
+		value = cookie.Value
+	}
+	var lobbyid string
+	if err := config.Cookie.Decode("party-lobby", value, &lobbyid); err != nil {
+		fgc.Log.Printf("Could not decode Cookie: %s\n", err.Error())
+		return router.NotAllowed{
+			Request:  fgc.Request,
+			Fallback: "/games/new",
+		}
+	}
+	l := lobby.Find(lobbyid)
+	if l == nil {
+		fgc.Log.Println("Could not retrieve lobby from cookie")
+		return router.NotAllowed{
+			Request:  fgc.Request,
+			Fallback: "/games/new",
+		}
+		return nil
+	}
+	fgc.Lobby = l
+	fgc.Context["Lobby"] = l
+	return nil
+}
 func (fgc FrontGameCtrl) New() router.Result {
 	fgc.Template = "new_game_lobby.html"
 	return fgc.Render()
@@ -90,9 +125,43 @@ func (fgc FrontGameCtrl) New() router.Result {
 }
 
 func (fgc FrontGameCtrl) Create() router.Result {
+	fgc.Request.ParseForm()
+	gid := fgc.Request.Form.Get("game_id")
+	if gid == "" {
+		return router.Redirect{
+			Request: fgc.Request,
+			URL:     "/games/new",
+		}
+	}
+
+	id, err := strconv.Atoi(gid)
+	if err != nil {
+		return router.Redirect{
+			Request: fgc.Request,
+			URL:     "/games/new",
+		}
+	}
+
+	g, err := config.Conn.Deck.Find(id)
+	if err != nil {
+		return router.Redirect{
+			Request: fgc.Request,
+			URL:     "/games/new",
+		}
+	}
+	l := lobby.Create(g)
+	en, err := config.Cookie.Encode("party-lobby", l.ID)
+	if err != nil {
+		return router.Redirect{
+			Request: fgc.Request,
+			URL:     "/games/new",
+		}
+	}
+
+	http.SetCookie(fgc.Out, &http.Cookie{Name: "party-lobby", Value: en, Path: "/"})
 	return router.Redirect{
 		Request: fgc.Request,
-		URL:     "/",
+		URL:     "/games/" + l.ID,
 	}
 }
 

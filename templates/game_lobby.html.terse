@@ -1,1 +1,1 @@
-h1 Current Game: Something
+h1 Current Game: {{ .Lobby.Game.Name }}

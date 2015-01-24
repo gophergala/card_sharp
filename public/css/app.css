@@ -1,9 +1,6 @@
-.game_panel {
-  width: 47%;
-  display: inline-block;
-  margin: 16px;
-}
-
 .game_panel p {
   font-size: 1.4em;
+}
+.game_panel .panel-heading {
+  background-color: #66cc99;
 }
