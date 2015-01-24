@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"math/rand"
 	"os"
 	"path/filepath"
 
@@ -82,9 +83,23 @@ func CompileTemplates() {
 }
 
 func TemplateFuncs() template.FuncMap {
+	play_messages := []string{
+		"Play This Game!",
+		"Let's Get to Playing!",
+		"Game On!",
+		"Start Playing!",
+		"Play Now!",
+		"Do Want (to play)",
+		"How Now Game Cow!",
+		"We would like to play",
+		"Start the Game Already!",
+	}
 	return template.FuncMap{
 		"available_games": func() ([]store.Deck, error) {
 			return Conn.Deck.AvailableDecks().RetrieveAll()
+		},
+		"play_this_game": func() string {
+			return play_messages[rand.Intn(len(play_messages))]
 		},
 	}
 }

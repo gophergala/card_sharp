@@ -4,10 +4,11 @@ import "log"
 
 func SetupFillIn(c *Conn) {
 	d := Deck{
-		Name:      "Fill in the Blanks",
-		FullGame:  true,
-		GameType:  "blanks",
-		AccountID: 1,
+		Name:        "Fill in the Blanks",
+		Description: "Players try to complete a phrase in the funniest manner, using the cards in their hand. Players rotate through judging duties where they must choose the best card from the other players that completes the phrase.",
+		FullGame:    true,
+		GameType:    "blanks",
+		AccountID:   1,
 	}
 	err := c.Deck.SaveAll([]Deck{d})
 	if err != nil {

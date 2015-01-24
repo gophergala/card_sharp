@@ -1,5 +1,9 @@
 h1 Pick a Game to Start
+hr
 
-ul
-  &available_games
-    li= .Name
+&available_games
+  .game_panel.panel.panel-success
+    .panel-heading > h4= .Name
+    .panel-body > p= .Description
+    .panel-footer
+      a.btn.btn-primary.btn-lg.btn-block= play_this_game

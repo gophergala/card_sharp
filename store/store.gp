@@ -23,6 +23,7 @@ type Account table {
 type Deck table {
   ID int
   Name string
+  Description string
 
   Private bool
   FullGame bool

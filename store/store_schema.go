@@ -48,6 +48,8 @@ var Schema = schema.Schema{
 
 				DefaultString("Name"),
 
+				DefaultString("Description"),
+
 				DefaultBool("Private"),
 
 				DefaultBool("FullGame"),
@@ -219,11 +221,11 @@ func (t *Deck) Save(c *Conn) error {
 }
 
 func (t *Deck) simpleCols(c *Conn) []string {
-	return []string{c.SQLColumn("Deck", "Name"), c.SQLColumn("Deck", "Private"), c.SQLColumn("Deck", "FullGame"), c.SQLColumn("Deck", "GameType"), c.SQLColumn("Deck", "AccountID")}
+	return []string{c.SQLColumn("Deck", "Name"), c.SQLColumn("Deck", "Description"), c.SQLColumn("Deck", "Private"), c.SQLColumn("Deck", "FullGame"), c.SQLColumn("Deck", "GameType"), c.SQLColumn("Deck", "AccountID")}
 }
 
 func (t *Deck) simpleVals() []interface{} {
-	return []interface{}{t.Name, t.Private, t.FullGame, t.GameType, t.AccountID}
+	return []interface{}{t.Name, t.Description, t.Private, t.FullGame, t.GameType, t.AccountID}
 }
 
 func (t *Deck) create(c *Conn) error {

@@ -18,8 +18,9 @@ type Account struct {
 }
 
 type Deck struct {
-	ID   int
-	Name string
+	ID          int
+	Name        string
+	Description string
 
 	Private  bool
 	FullGame bool

@@ -4,10 +4,11 @@ import "log"
 
 func SetupDescribe(c *Conn) {
 	d := Deck{
-		Name:      "Description Roulette",
-		FullGame:  true,
-		GameType:  "adjective",
-		AccountID: 1,
+		Name:        "Description Roulette",
+		Description: "Players try to match their cards to the topic. Are Banks Dreary? You have to decide. But watch out, the topic can get modified so you may get a topic of 'The Furthest Thing From Dreary'.",
+		FullGame:    true,
+		GameType:    "adjective",
+		AccountID:   1,
 	}
 	err := c.Deck.SaveAll([]Deck{d})
 	if err != nil {

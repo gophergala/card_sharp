@@ -1105,6 +1105,38 @@ func (m mapperDeckToName) Scan(v interface{}) error {
 
 }
 
+func (scope DeckScope) Description() DeckScope {
+	scope.currentColumn =
+		scope.conn.SQLTable(scope.tableName()) +
+			"." +
+			scope.conn.SQLColumn(scope.tableName(), "Description")
+	scope.currentAlias = ""
+	scope.isDistinct = false
+	return scope
+}
+
+type mapperDeckToDescription struct {
+	Mapper *mapperDeck
+}
+
+func (m mapperDeckToDescription) Scan(v interface{}) error {
+
+	if v == nil {
+		// do nothing, use zero value
+	} else if s, ok := v.(string); ok {
+
+		(*m.Mapper.Current).Description = s
+
+	} else if s, ok := v.([]byte); ok {
+
+		(*m.Mapper.Current).Description = string(s)
+
+	}
+
+	return nil
+
+}
+
 func (scope DeckScope) Private() DeckScope {
 	scope.currentColumn =
 		scope.conn.SQLTable(scope.tableName()) +
@@ -1246,12 +1278,14 @@ type mapperDeck struct {
 
 func mapperForDeck(scope DeckScope) *mapperDeck {
 	m := &mapperDeck{}
-	m.Columns = []string{scope.tableName() + "." + scope.conn.SQLColumn("Deck", "ID"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Name"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Private"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "FullGame"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "GameType"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "AccountID")}
+	m.Columns = []string{scope.tableName() + "." + scope.conn.SQLColumn("Deck", "ID"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Name"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Description"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Private"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "FullGame"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "GameType"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "AccountID")}
 	m.Scanners = []interface{}{
 
 		mapperDeckToID{m},
 
 		mapperDeckToName{m},
+
+		mapperDeckToDescription{m},
 
 		mapperDeckToPrivate{m},
 
