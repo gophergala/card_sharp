@@ -1741,6 +1741,38 @@ func (m mapperCardToName) Scan(v interface{}) error {
 
 }
 
+func (scope CardScope) Type() CardScope {
+	scope.currentColumn =
+		scope.conn.SQLTable(scope.tableName()) +
+			"." +
+			scope.conn.SQLColumn(scope.tableName(), "Type")
+	scope.currentAlias = ""
+	scope.isDistinct = false
+	return scope
+}
+
+type mapperCardToType struct {
+	Mapper *mapperCard
+}
+
+func (m mapperCardToType) Scan(v interface{}) error {
+
+	if v == nil {
+		// do nothing, use zero value
+	} else if s, ok := v.(string); ok {
+
+		(*m.Mapper.Current).Type = s
+
+	} else if s, ok := v.([]byte); ok {
+
+		(*m.Mapper.Current).Type = string(s)
+
+	}
+
+	return nil
+
+}
+
 func (scope CardScope) Data() CardScope {
 	scope.currentColumn =
 		scope.conn.SQLTable(scope.tableName()) +
@@ -1814,12 +1846,14 @@ type mapperCard struct {
 
 func mapperForCard(scope CardScope) *mapperCard {
 	m := &mapperCard{}
-	m.Columns = []string{scope.tableName() + "." + scope.conn.SQLColumn("Card", "ID"), scope.tableName() + "." + scope.conn.SQLColumn("Card", "Name"), scope.tableName() + "." + scope.conn.SQLColumn("Card", "Data"), scope.tableName() + "." + scope.conn.SQLColumn("Card", "DeckID")}
+	m.Columns = []string{scope.tableName() + "." + scope.conn.SQLColumn("Card", "ID"), scope.tableName() + "." + scope.conn.SQLColumn("Card", "Name"), scope.tableName() + "." + scope.conn.SQLColumn("Card", "Type"), scope.tableName() + "." + scope.conn.SQLColumn("Card", "Data"), scope.tableName() + "." + scope.conn.SQLColumn("Card", "DeckID")}
 	m.Scanners = []interface{}{
 
 		mapperCardToID{m},
 
 		mapperCardToName{m},
+
+		mapperCardToType{m},
 
 		mapperCardToData{m},
 

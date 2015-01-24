@@ -77,6 +77,8 @@ var Schema = schema.Schema{
 
 				DefaultString("Name"),
 
+				DefaultString("Type"),
+
 				schema.Column{
 					Name:   "Data",
 					Type:   "text",
@@ -269,11 +271,11 @@ func (t *Card) Save(c *Conn) error {
 }
 
 func (t *Card) simpleCols(c *Conn) []string {
-	return []string{c.SQLColumn("Card", "Name"), c.SQLColumn("Card", "Data"), c.SQLColumn("Card", "DeckID")}
+	return []string{c.SQLColumn("Card", "Name"), c.SQLColumn("Card", "Type"), c.SQLColumn("Card", "Data"), c.SQLColumn("Card", "DeckID")}
 }
 
 func (t *Card) simpleVals() []interface{} {
-	return []interface{}{t.Name, t.Data, t.DeckID}
+	return []interface{}{t.Name, t.Type, t.Data, t.DeckID}
 }
 
 func (t *Card) create(c *Conn) error {

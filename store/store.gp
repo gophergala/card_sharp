@@ -43,6 +43,7 @@ type Card table {
   ID int
 
   Name string
+  Type string
   Data string `type:"text"`
 
   DeckID int
