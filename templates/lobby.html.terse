@@ -1,0 +1,33 @@
+!!
+html
+  head
+    title= default .Title "CardParty.Today"
+    link rel="stylesheet" href="/css/bootstrap.min.css"
+    link rel="stylesheet" href="/css/app.css"
+    script type="text/javascript" src="/js/jquery.js"
+    script type="text/javascript" src="/js/bootstrap.js"
+    script type="text/javascript" src="/js/app.js"
+  body
+    .container-fluid
+      .current_game
+        h1= .Lobby.Game.Name
+      .player_list
+        .list-group
+          a.list-group-item > h3 Players
+          a.list-group-item.active 
+            Andrew Sellers
+            span.badge 3
+          a.list-group-item 
+
+            span.badge 1
+            span.glyphicon.glyphicon-king
+            Curtis Sellers
+          a.list-group-item
+            span.badge 8
+            Sherry Sellers
+      @
+      .join_message
+        h2
+          Join @ www.CardParty.Today
+          .join_code
+            Code {{ .Lobby.ID }}

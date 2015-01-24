@@ -166,6 +166,7 @@ func (fgc FrontGameCtrl) Create() router.Result {
 }
 
 func (fgc FrontGameCtrl) Show() router.Result {
+	fgc.Layout = "lobby.html"
 	fgc.Template = "game_lobby.html"
 	return fgc.Render()
 

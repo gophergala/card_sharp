@@ -1,1 +1,5 @@
-h1 Current Game: {{ .Lobby.Game.Name }}
+Rules:
+
+blah 
+
+blah
