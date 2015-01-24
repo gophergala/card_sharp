@@ -82,3 +82,42 @@ type FrontGameCtrl struct {
 func (FrontGameCtrl) Path() string {
 	return "games"
 }
+
+func (fgc FrontGameCtrl) New() router.Result {
+	fgc.Template = "new_game_lobby.html"
+	return fgc.Render()
+
+}
+
+func (fgc FrontGameCtrl) Create() router.Result {
+	return router.Redirect{
+		Request: fgc.Request,
+		URL:     "/",
+	}
+}
+
+func (fgc FrontGameCtrl) Show() router.Result {
+	fgc.Template = "game_lobby.html"
+	return fgc.Render()
+
+}
+func (fgc FrontGameCtrl) Edit() router.Result {
+	fgc.Template = "edit_game_lobby.html"
+	return fgc.Render()
+}
+
+func (fgc FrontGameCtrl) Update() router.Result {
+	return router.Redirect{
+		Request: fgc.Request,
+		URL:     "/",
+	}
+}
+
+func (fgc FrontGameCtrl) Join() router.Result {
+	fgc.Template = "join_game.html"
+	return fgc.Render()
+}
+
+func (fgc FrontGameCtrl) OtherBase(sr *router.SubRoute) {
+	sr.Get("join").Action("Join")
+}
