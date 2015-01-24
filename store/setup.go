@@ -7,12 +7,12 @@ import (
 	"github.com/acsellers/dr/migrate"
 )
 
-func (c *Conn) Setup(dbms migrate.System) error {
+func (c *Conn) Setup() error {
 	db := migrate.Database{
 		DB:         c.DB,
 		Schema:     Schema,
 		Translator: NewAppConfig("postgres"),
-		DBMS:       dbms,
+		DBMS:       migrate.Postgres,
 		Log:        log.New(os.Stdout, "Migrate: ", 0),
 	}
 	err := db.Migrate()

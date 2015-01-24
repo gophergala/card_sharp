@@ -3,6 +3,7 @@ package config
 import (
 	"flag"
 	"fmt"
+	"html/template"
 	"log"
 	"os"
 	"path/filepath"
@@ -51,6 +52,7 @@ func init() {
 	if Conn, err = store.Open(Config.SQLType, Config.SQLAddr); err != nil {
 		log.Fatal("Open SQL Connection", Config, err)
 	}
+	Conn.Setup()
 
 	Cookie = securecookie.New(
 		securecookie.GenerateRandomKey(32),
@@ -70,11 +72,19 @@ func WebPort() string {
 
 func CompileTemplates() {
 	Tmpl = multitemplate.New("base")
-	// Tmpl.Funcs(template.FuncMap{})
+	Tmpl.Funcs(TemplateFuncs())
 
 	Tmpl.Base = "templates"
 	_, err := Tmpl.ParseGlob(filepath.Join("templates", "*.html.*"))
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func TemplateFuncs() template.FuncMap {
+	return template.FuncMap{
+		"available_games": func() ([]store.Deck, error) {
+			return Conn.Deck.AvailableDecks().RetrieveAll()
+		},
 	}
 }

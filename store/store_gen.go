@@ -1139,32 +1139,32 @@ func (m mapperDeckToPrivate) Scan(v interface{}) error {
 
 }
 
-func (scope DeckScope) Full() DeckScope {
+func (scope DeckScope) FullGame() DeckScope {
 	scope.currentColumn =
 		scope.conn.SQLTable(scope.tableName()) +
 			"." +
-			scope.conn.SQLColumn(scope.tableName(), "Full")
+			scope.conn.SQLColumn(scope.tableName(), "FullGame")
 	scope.currentAlias = ""
 	scope.isDistinct = false
 	return scope
 }
 
-type mapperDeckToFull struct {
+type mapperDeckToFullGame struct {
 	Mapper *mapperDeck
 }
 
-func (m mapperDeckToFull) Scan(v interface{}) error {
+func (m mapperDeckToFullGame) Scan(v interface{}) error {
 
 	if v == nil {
 		// it is false or null, the zero values
 	} else if b, ok := v.(bool); ok {
 
-		(*m.Mapper.Current).Full = b
+		(*m.Mapper.Current).FullGame = b
 
 	} else if i, ok := v.(int64); ok {
 
 		if i != 0 {
-			(*m.Mapper.Current).Full = true
+			(*m.Mapper.Current).FullGame = true
 		}
 
 	}
@@ -1246,7 +1246,7 @@ type mapperDeck struct {
 
 func mapperForDeck(scope DeckScope) *mapperDeck {
 	m := &mapperDeck{}
-	m.Columns = []string{scope.tableName() + "." + scope.conn.SQLColumn("Deck", "ID"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Name"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Private"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Full"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "GameType"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "AccountID")}
+	m.Columns = []string{scope.tableName() + "." + scope.conn.SQLColumn("Deck", "ID"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Name"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Private"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "FullGame"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "GameType"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "AccountID")}
 	m.Scanners = []interface{}{
 
 		mapperDeckToID{m},
@@ -1255,7 +1255,7 @@ func mapperForDeck(scope DeckScope) *mapperDeck {
 
 		mapperDeckToPrivate{m},
 
-		mapperDeckToFull{m},
+		mapperDeckToFullGame{m},
 
 		mapperDeckToGameType{m},
 

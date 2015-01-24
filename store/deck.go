@@ -1,5 +1,5 @@
 package store
 
 func (ds DeckScope) AvailableDecks() DeckScope {
-	return ds.Full().Eq(true).Private().Eq(false)
+	return ds.FullGame().Eq(true).Private().Eq(false)
 }

@@ -22,7 +22,7 @@ type Deck struct {
 	Name string
 
 	Private  bool
-	Full     bool
+	FullGame bool
 	GameType string
 
 	AccountID   int

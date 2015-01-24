@@ -24,7 +24,7 @@ func NewAppConfig(driverName string) AppConfig {
 	return AppConfig{
 		SpecialTables:  NameMap{},
 		SpecialColumns: map[string]NameMap{},
-		Normal:         nil,
+		Normal:         LowerConfig{},
 	}
 }
 

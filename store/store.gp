@@ -25,7 +25,7 @@ type Deck table {
   Name string
 
   Private bool
-  Full bool
+  FullGame bool
   GameType string
 
   AccountID int

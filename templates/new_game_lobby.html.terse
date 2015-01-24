@@ -1,1 +1,5 @@
 h1 Pick a Game to Start
+
+ul
+  &available_games
+    li= .Name

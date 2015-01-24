@@ -1,14 +1,18 @@
 package store
 
+import "log"
+
 func SetupDescribe(c *Conn) {
 	d := Deck{
 		Name:      "Description Roulette",
-		Full:      true,
+		FullGame:  true,
 		GameType:  "adjective",
 		AccountID: 1,
 	}
-
-	c.Deck.SaveAll([]Deck{d})
+	err := c.Deck.SaveAll([]Deck{d})
+	if err != nil {
+		log.Fatal("FillIn Load:", err)
+	}
 	cards := []Card{
 		Card{
 			Name:   "Dreary",
