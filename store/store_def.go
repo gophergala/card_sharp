@@ -21,9 +21,9 @@ type Deck struct {
 	ID   int
 	Name string
 
-	Private bool
-	Full    bool
-	Base    string
+	Private  bool
+	Full     bool
+	GameType string
 
 	AccountID   int
 	cached_conn *Conn

@@ -2,11 +2,18 @@ package config
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
-	"git.andrewcsellers.com/acsellers/chat/store"
+	"git.andrewcsellers.com/acsellers/card_sharp/store"
 	"github.com/BurntSushi/toml"
+	"github.com/acsellers/multitemplate"
+	"github.com/acsellers/multitemplate/helpers"
+	_ "github.com/acsellers/multitemplate/terse"
+	"github.com/gorilla/securecookie"
+	_ "github.com/lib/pq"
 )
 
 var (
@@ -14,10 +21,11 @@ var (
 	Dev      = flag.Bool("dev", false, "Development mode, load local config")
 	ConfPath = flag.String("conf", "/etc/card_party/solo.conf", "Production Config file location")
 	Config   Settings
-	Cookie   *securecookie.Cookie
+	Cookie   *securecookie.SecureCookie
+	Tmpl     *multitemplate.Template
 )
 
-var Settings struct {
+type Settings struct {
 	WebPort      int
 	ResourcePath string
 	SQLAddr      string
@@ -28,10 +36,11 @@ func init() {
 	flag.Parse()
 
 	var confPath string
-	if Dev {
+	if *Dev {
 		if _, err := os.Stat("solo.conf"); err != nil {
 			log.Fatal("Missing solo.conf for config settings")
 		}
+		confPath = "solo.conf"
 	} else {
 		confPath = *ConfPath
 	}
@@ -47,4 +56,25 @@ func init() {
 		securecookie.GenerateRandomKey(32),
 		securecookie.GenerateRandomKey(32),
 	)
+
+	helpers.LoadHelpers("all")
+	CompileTemplates()
+}
+
+func WebPort() string {
+	if Config.WebPort == 0 {
+		Config.WebPort = 8100
+	}
+	return fmt.Sprintf(":%d", Config.WebPort)
+}
+
+func CompileTemplates() {
+	Tmpl = multitemplate.New("base")
+	// Tmpl.Funcs(template.FuncMap{})
+
+	Tmpl.Base = "templates"
+	_, err := Tmpl.ParseGlob(filepath.Join("templates", "*.html.*"))
+	if err != nil {
+		log.Fatal(err)
+	}
 }

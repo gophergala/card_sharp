@@ -1,0 +1,14 @@
+h4 CardParty.Today
+hr
+.jumbotron
+  h1 Play Card Games with your Friends!
+  p
+    Don't worry about forgetting the cards, just
+    pull out your smartphone and follow along.
+  p
+    No Account required to Join a Game, just pick a
+    nickname and color to play.
+
+  p
+    a.btn.btn-primary.btn-lg href="/games/join" Join a Game
+    a.btn.btn-success.btn-lg href="/games/new" Start a Game

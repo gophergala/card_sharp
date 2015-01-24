@@ -26,7 +26,7 @@ type Deck table {
 
   Private bool
   Full bool
-  Base string
+  GameType string
 
   AccountID int
   relation {
