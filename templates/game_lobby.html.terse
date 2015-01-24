@@ -1,5 +1,6 @@
-Rules:
+h2 Rules:
 
-blah 
-
-blah
+?eq .Lobby.Game.GameType "blanks"
+  >>blanks_rules.html
+?eq .Lobby.Game.GameType "adjective"
+  >>adjective_rules.html

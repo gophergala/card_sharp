@@ -20,12 +20,13 @@ html
           a.list-group-item 
 
             span.badge 1
-            span.glyphicon.glyphicon-king
             Curtis Sellers
+            span.glyphicon.glyphicon-king
           a.list-group-item
             span.badge 8
             Sherry Sellers
-      @
+      .content
+        @
       .join_message
         h2
           Join @ www.CardParty.Today

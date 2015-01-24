@@ -24,8 +24,13 @@
 .join_message h2 {
   color: #1f3a93;
 }
-
 .join_code {
-  float: right;
+  float:right;
 }
 
+ul.rules {
+  width: 40%;
+}
+ul.rules li {
+  font-size: 1.5em;
+}
