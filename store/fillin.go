@@ -1,7 +1,5 @@
 package store
 
-import "log"
-
 func SetupFillIn(c *Conn) {
 	d := Deck{
 		Name:        "Fill in the Blanks",
@@ -9,11 +7,9 @@ func SetupFillIn(c *Conn) {
 		FullGame:    true,
 		GameType:    "blanks",
 		AccountID:   1,
+		MinPlayer:   3,
 	}
-	err := c.Deck.SaveAll([]Deck{d})
-	if err != nil {
-		log.Fatal("FillIn Load:", err)
-	}
+	d.Save(c)
 	cards := []Card{
 		Card{
 			Name:   "The Door was the Way to %[1]s",

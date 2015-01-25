@@ -1,0 +1,13 @@
+h1#player_status class="{{ if eq .Lobby.Czar.ID .Player.ID }}czar{{ end }}"
+  = .Player.StatusMessage
+#player_board
+  .btn-group-vertical.card-list
+    &.Hand
+      a.btn.btn-default.btn-block.play_card= .Name
+#action
+  ?.Player.Actionable
+    a.btn.btn-primary#dothing.btn-block
+      = .Player.ButtonMessage
+  !?
+    a.btn.btn-primary#dothing.btn-block.disabled
+      = .Player.ButtonMessage

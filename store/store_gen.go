@@ -1237,6 +1237,39 @@ func (m mapperDeckToGameType) Scan(v interface{}) error {
 
 }
 
+func (scope DeckScope) MinPlayer() DeckScope {
+	scope.currentColumn =
+		scope.conn.SQLTable(scope.tableName()) +
+			"." +
+			scope.conn.SQLColumn(scope.tableName(), "MinPlayer")
+	scope.currentAlias = ""
+	scope.isDistinct = false
+	return scope
+}
+
+type mapperDeckToMinPlayer struct {
+	Mapper *mapperDeck
+}
+
+func (m mapperDeckToMinPlayer) Scan(v interface{}) error {
+
+	if v == nil {
+		// do nothing, use zero value
+	} else if s, ok := v.(int64); ok {
+
+		(*m.Mapper.Current).MinPlayer = int(s)
+
+	} else if b, ok := v.([]byte); ok {
+		i, err := strconv.Atoi(string(b))
+
+		(*m.Mapper.Current).MinPlayer = i
+
+		return err
+	}
+	return nil
+
+}
+
 func (scope DeckScope) AccountID() DeckScope {
 	scope.currentColumn =
 		scope.conn.SQLTable(scope.tableName()) +
@@ -1278,7 +1311,7 @@ type mapperDeck struct {
 
 func mapperForDeck(scope DeckScope) *mapperDeck {
 	m := &mapperDeck{}
-	m.Columns = []string{scope.tableName() + "." + scope.conn.SQLColumn("Deck", "ID"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Name"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Description"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Private"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "FullGame"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "GameType"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "AccountID")}
+	m.Columns = []string{scope.tableName() + "." + scope.conn.SQLColumn("Deck", "ID"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Name"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Description"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "Private"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "FullGame"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "GameType"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "MinPlayer"), scope.tableName() + "." + scope.conn.SQLColumn("Deck", "AccountID")}
 	m.Scanners = []interface{}{
 
 		mapperDeckToID{m},
@@ -1292,6 +1325,8 @@ func mapperForDeck(scope DeckScope) *mapperDeck {
 		mapperDeckToFullGame{m},
 
 		mapperDeckToGameType{m},
+
+		mapperDeckToMinPlayer{m},
 
 		mapperDeckToAccountID{m},
 	}

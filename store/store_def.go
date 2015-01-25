@@ -22,9 +22,10 @@ type Deck struct {
 	Name        string
 	Description string
 
-	Private  bool
-	FullGame bool
-	GameType string
+	Private   bool
+	FullGame  bool
+	GameType  string
+	MinPlayer int
 
 	AccountID   int
 	cached_conn *Conn

@@ -28,6 +28,7 @@ type Deck table {
   Private bool
   FullGame bool
   GameType string
+  MinPlayer int
 
   AccountID int
   relation {

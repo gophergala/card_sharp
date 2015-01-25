@@ -1,7 +1,5 @@
 package store
 
-import "log"
-
 func SetupDescribe(c *Conn) {
 	d := Deck{
 		Name:        "Description Roulette",
@@ -9,11 +7,9 @@ func SetupDescribe(c *Conn) {
 		FullGame:    true,
 		GameType:    "adjective",
 		AccountID:   1,
+		MinPlayer:   3,
 	}
-	err := c.Deck.SaveAll([]Deck{d})
-	if err != nil {
-		log.Fatal("FillIn Load:", err)
-	}
+	d.Save(c)
 	cards := []Card{
 		Card{
 			Name:   "Dreary",

@@ -762,6 +762,9 @@ func createRecord(c *Conn, cols []string, vals []interface{}, name, pkname strin
 		var pk int
 		row := c.QueryRow(sql, vals...)
 		err := row.Scan(&pk)
+		if err != nil {
+			fmt.Println(sql, vals)
+		}
 		return pk, err
 	} else {
 		result, err := c.Exec(sql, vals...)
@@ -770,6 +773,10 @@ func createRecord(c *Conn, cols []string, vals []interface{}, name, pkname strin
 		}
 
 		id, err := result.LastInsertId()
+		if err != nil {
+			fmt.Println(sql, vals)
+		}
+
 		return int(id), err
 	}
 }

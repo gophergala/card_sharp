@@ -34,3 +34,28 @@ ul.rules {
 ul.rules li {
   font-size: 1.5em;
 }
+#player_status {
+  text-align: center;
+}
+#player_status.czar {
+  text-decoration: underline;
+}
+a.list-group-item.czar {
+  text-decoration: underline;
+}
+#action {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+#action a {
+  font-size: 1.3em;
+}
+
+.card-list {
+  width: 100%;
+}
+.card-list a {
+  font-size: 1.2em;
+  padding: 10px;
+}

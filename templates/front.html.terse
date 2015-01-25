@@ -10,5 +10,8 @@ hr
     nickname and color to play.
 
   p
-    a.btn.btn-primary.btn-lg href="/games/join" Join a Game
-    a.btn.btn-success.btn-lg href="/games/new" Start a Game
+    .row
+      .col-md-6
+        a.btn.btn-primary.btn-lg.btn-block href="/games/join" Join a Game
+      .col-md-6
+        a.btn.btn-success.btn-lg.btn-block href="/games/new" Start a Game

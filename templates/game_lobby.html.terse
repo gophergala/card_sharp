@@ -1,6 +1,22 @@
-h2 Rules:
+?eq .Lobby.State "rules"
+  h2 Rules:
 
-?eq .Lobby.Game.GameType "blanks"
-  >>blanks_rules.html
-?eq .Lobby.Game.GameType "adjective"
-  >>adjective_rules.html
+  ?eq .Lobby.Game.GameType "blanks"
+    >>blanks_rules.html
+  ?eq .Lobby.Game.GameType "adjective"
+    >>adjective_rules.html
+!?
+  ?.Judging
+    #play.hide
+      h2 Current Phrase
+      .well
+        h3#phrase= .Lobby.Instance.CurrentCard
+    #judge
+      >>judging.html
+  !?
+    #play
+      h2 Current Phrase
+      .well
+        h3#phrase= .Lobby.Instance.CurrentCard
+    #judge
+      >>judging.html
