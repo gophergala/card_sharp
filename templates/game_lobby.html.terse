@@ -6,7 +6,7 @@
   ?eq .Lobby.Game.GameType "adjective"
     >>adjective_rules.html
 !?
-  ?.Judging
+  ?.Lobby.Instance.Judging
     #play.hide
       h2 Current Phrase
       .well
