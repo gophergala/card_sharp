@@ -2,13 +2,19 @@
   ?.Ready
     a.list-group-item.active id="item_{{ .ID }}"
       = .Name
-      span.badge id="score_{{ .ID }}" 0
-      span.glyphicon.glyphicon-king.hide id="king_{{ .ID }}"
+      span.badge id="score_{{ .ID }}"= .RoundPoints
+      ?.Judge
+        span.glyphicon.glyphicon-king id="king_{{ .ID }}"
+      !?
+        span.glyphicon.glyphicon-king.hide id="king_{{ .ID }}"
   !?
     a.list-group-item id="item_{{ .ID }}" class="{{ if .Ready }}active{{ end }}"
       = .Name
-      span.badge id="score_{{ .ID }}" 0
-      span.glyphicon.glyphicon-king.hide id="king_{{ .ID }}"
+      span.badge id="score_{{ .ID }}"= .RoundPoints
+      ?.Judge
+        span.glyphicon.glyphicon-king id="king_{{ .ID }}"
+      !?
+        span.glyphicon.glyphicon-king.hide id="king_{{ .ID }}"
 
 !!
 html

@@ -62,6 +62,15 @@ func Find(id string) *Lobby {
 	return activeLobbies[id]
 }
 
+func (l Lobby) FindPlayer(pid string) *Player {
+	for _, p := range l.Players {
+		if p.ID == pid {
+			return p
+		}
+	}
+	return nil
+}
+
 func (g *Lobby) Add(p *Player) {
 	for _, ap := range g.Players {
 		if p == ap {
@@ -152,11 +161,12 @@ func (g *Lobby) NotifyFor(p *Player) {
 }
 
 type Player struct {
-	ID     string
-	Name   string
-	Czar   bool
-	Status string
-	Cards  []*store.Card
+	ID          string
+	Name        string
+	Czar        bool
+	Status      string
+	Cards       []*store.Card
+	RoundPoints int
 }
 
 func (p Player) StatusMessage() string {
@@ -175,6 +185,15 @@ func (p Player) StatusMessage() string {
 		return "Judging"
 	default:
 		return "Missing: " + p.Status
+	}
+}
+
+func (p Player) ShowCards() bool {
+	switch p.Status {
+	case "play", "play-wait":
+		return true
+	default:
+		return false
 	}
 }
 
@@ -267,10 +286,120 @@ func (l *Lobby) PlayCard(p *Player, card string) {
 						Type: "start_judge",
 					},
 				)
+				l.Presenter <- je
+
+				j := l.Players[l.Instance.CurrentJudge]
+				j.Status = "judge"
+				b := &bytes.Buffer{}
+				config.Tmpl.ExecuteTemplate(
+					b,
+					"player_show.html",
+					map[string]interface{}{
+						"Lobby":   l,
+						"Player":  p,
+						"Judging": l.Instance.CurrentPlays,
+					})
+
+				je, _ = json.Marshal(
+					Event{
+						Type: "start_judge",
+						HTML: b.String(),
+					},
+				)
+				l.PlayerChan[j.ID] <- je
 			}
 		}
 	}
 	l.Sync(p)
+}
+
+func (l *Lobby) PickCard(pid string) {
+	pi := l.FindPlayer(pid)
+	pi.RoundPoints++
+	if pi.RoundPoints >= 6 {
+		// do win things
+		return
+	}
+	l.Instance.RoundWinner = pid
+	l.Instance.RoundCard = l.Instance.CurrentPlays[pid]
+
+	wm := fmt.Sprintf(
+		`<div class="page-header"><h2>%s<small>%s</small></h2></div>`,
+		l.Instance.CurrentWith(l.Instance.RoundCard),
+		l.FindPlayer(pid).Name,
+	)
+	je, _ := json.Marshal(
+		Event{
+			Type: "pick_winner",
+			HTML: wm,
+			Data: pid,
+		},
+	)
+	l.Presenter <- je
+
+	je, _ = json.Marshal(
+		Event{
+			Type: "round_win",
+		},
+	)
+	l.PlayerChan[pid] <- je
+	for ci, ws := range l.PlayerChan {
+		if ci != pid {
+			je, _ = json.Marshal(
+				Event{Type: "round_queue"},
+			)
+			ws <- je
+		}
+	}
+
+	// start the next round in 30 seconds
+	go func() {
+		time.Sleep(10 * time.Second)
+		l.NextRound()
+	}()
+}
+
+func (l *Lobby) NextRound() {
+	l.Instance.CurrentPlays = map[string]store.Card{}
+	l.Instance.CurrentJudge++
+	if l.Instance.CurrentJudge >= len(l.Players) {
+		l.Instance.CurrentJudge = 0
+	}
+	l.Instance.AdvanceCard()
+	for i, p := range l.Players {
+		if i == l.Instance.CurrentJudge {
+			p.Status = "judge-wait"
+		} else {
+			p.Status = "play"
+		}
+	}
+
+	for pid, ws := range l.PlayerChan {
+		b := &bytes.Buffer{}
+		fmt.Println(l.FindPlayer(pid).Name, config.Tmpl.ExecuteTemplate(
+			b,
+			"player_show.html",
+			map[string]interface{}{
+				"Lobby":  l,
+				"Player": l.FindPlayer(pid),
+				"Hand":   l.Instance.Hands[l.Instance.Players[pid]],
+			},
+		))
+		je, _ := json.Marshal(
+			Event{
+				Type: "new_round",
+				HTML: b.String(),
+			},
+		)
+		ws <- je
+
+	}
+	je, _ := json.Marshal(
+		Event{
+			Type: "game_start",
+		},
+	)
+	l.Presenter <- je
 }
 
 func (l *Lobby) Sync(p *Player) {
@@ -296,6 +425,19 @@ func CreatePlayer(name string) *Player {
 	p.ID = base64.URLEncoding.EncodeToString(securecookie.GenerateRandomKey(16))
 	knownPlayers[p.ID] = p
 	return p
+}
+
+func (p Player) String() string {
+	return p.Name
+}
+
+func (p Player) Judge() bool {
+	switch p.Status {
+	case "judge-wait", "judge":
+		return true
+	default:
+		return false
+	}
 }
 
 type Event struct {

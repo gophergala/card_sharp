@@ -37,12 +37,7 @@ ul.rules li {
 #player_status {
   text-align: center;
 }
-#player_status.czar {
-  text-decoration: underline;
-}
-a.list-group-item.czar {
-  text-decoration: underline;
-}
+
 #action {
   position: absolute;
   bottom: 0;
@@ -52,10 +47,10 @@ a.list-group-item.czar {
   font-size: 1.3em;
 }
 
-.card-list {
+.card-list, .judge-list {
   width: 100%;
 }
-.card-list a {
+.card-list a, .judge-list a {
   font-size: 1.2em;
   padding: 10px;
 }

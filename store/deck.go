@@ -62,6 +62,9 @@ type Game struct {
 	Hands        [][]Card
 	Players      map[string]int
 	CurrentPlays map[string]Card
+	CurrentJudge int
+	RoundCard    Card
+	RoundWinner  string
 }
 
 func (g Game) CurrentCard() string {

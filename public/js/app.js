@@ -28,9 +28,6 @@ function PresenterLoop(lobbyid) {
       console.log("UNKOWN EVENT")
     }
   }
-  var jid = $('meta[name="judge"]').attr("value");
-  console.log("#king_"+jid)
-  $(document.getElementById("king_"+jid)).removeClass("hide")
 }
 
 var PresenterEvents = {};
@@ -51,16 +48,17 @@ PresenterEvents["sync"] = function(ev) {
   // just because
   location.reload()
 }
-PresenterEvents["player_ready"] = function(ev) {
-  
-}
 
 PresenterEvents["start_judge"] = function(ev) {
   location.reload()
 }
 
-PresenterEvents["set_points"] = function(ev) {
-
+PresenterEvents["pick_winner"] = function(ev) {
+  var pid = ev.Data;
+  var el = $(document.getElementById("score_"+pid));
+  var pts = parseInt(el.html()) + 1;
+  el.html(pts);
+  $("#judge").html(ev.HTML);
 }
 
 
@@ -71,6 +69,7 @@ function PlayerLoop(lobbyid, playerid) {
     if (PlayerEvents[ev["Type"]]) {
       PlayerEvents[ev.Type](ev)
     } else {
+      console.log(ev)
       console.log("UNKOWN EVENT")
     }
   }
@@ -96,6 +95,20 @@ PlayerEvents["sync"] = function(ev) {
 PlayerEvents["new_hand"] = function(ev) {
   $("body").html(ev.HTML);
 }
+PlayerEvents["start_judge"] = function(ev) {
+  $("body").html(ev.HTML);
+  PlayerStartup["judge"]();
+}
+PlayerEvents["round_win"] = function(ev) {
+  $("#player_status").html("Won Round!")
+}
+PlayerEvents["new_round"] = function(ev) {
+  location.reload()
+}
+PlayerEvents["round_queue"] = function(ev) {
+  $("#player_status").html("Waiting for Next Round")
+}
+
 var PlayerStartup = {};
 
 PlayerStartup["play"] = function() {
@@ -110,6 +123,7 @@ PlayerStartup["play"] = function() {
   $("#dothing").click(function() {
     $("#dothing").addClass("disabled");
     $("#dothing").html("Playing Card");
+    $("#player_board").hide();
     $.post("/players/make_move", {card: Current["card"]})
   })
 }
@@ -121,3 +135,19 @@ PlayerStartup["judge-wait"] = function() {
   $(".card-list").hide()
 }
 
+PlayerStartup["judge"] = function() {
+  $(".judge_card").click(function(ev) {
+    $(".judge_card").removeClass("btn-warning")
+    $(ev.currentTarget).addClass("btn-warning")
+    Current["pid"] = ev.currentTarget.dataset.pid;
+    $("#dothing").removeClass("disabled")
+    $("#dothing").html("Submit Winner")
+  })
+  $("#dothing").click(function() {
+    $("#dothing").addClass("disabled");
+    $("#dothing").html("Submitting Winner");
+    $("#player_board").hide();
+    $.post("/players/pick_card", {pid: Current["pid"]})
+  })
+
+}

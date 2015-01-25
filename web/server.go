@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 
 	"git.andrewcsellers.com/acsellers/card_sharp/config"
 	"git.andrewcsellers.com/acsellers/card_sharp/lobby"
@@ -46,8 +47,11 @@ func NewRenderableCtrl(layout string) RenderableCtrl {
 	}
 }
 
+var m = sync.Mutex{}
+
 func (rc RenderableCtrl) Render() router.Result {
 	if *config.Dev {
+		m.Lock()
 		config.CompileTemplates()
 	}
 
@@ -58,6 +62,10 @@ func (rc RenderableCtrl) Render() router.Result {
 	}
 	buf := &bytes.Buffer{}
 	err := config.Tmpl.ExecuteContext(buf, ctx)
+	rc.Log.Println(err)
+	if *config.Dev {
+		m.Unlock()
+	}
 	if err != nil {
 		return router.InternalError{err}
 	} else {
@@ -320,6 +328,9 @@ func (pc PlayerCtrl) Show() router.Result {
 		pi := pc.Game.Instance.Players[pc.Player.ID]
 		pc.Context["Hand"] = pc.Game.Instance.Hands[pi]
 	}
+	if pc.Player.Status == "judge" {
+		pc.Context["Judging"] = pc.Game.Instance.CurrentPlays
+	}
 
 	return pc.Render()
 }
@@ -327,6 +338,16 @@ func (pc PlayerCtrl) Show() router.Result {
 func (pc PlayerCtrl) OtherItem(sr *router.SubRoute) {
 	sr.Post("start_game").Action("StartGame")
 	sr.Post("make_move").Action("MakeMove")
+	sr.Post("pick_card").Action("PickCard")
+}
+
+func (pc PlayerCtrl) PickCard() router.Result {
+	if pc.Game.Players[pc.Game.Instance.CurrentJudge] != pc.Player {
+		return nil
+	}
+	pc.Request.ParseForm()
+	pc.Game.PickCard(pc.Request.Form.Get("pid"))
+	return router.String{Content: "ok"}
 }
 func (pc PlayerCtrl) StartGame() router.Result {
 	if pc.Game.Czar == pc.Player {
