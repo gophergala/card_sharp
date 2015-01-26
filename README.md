@@ -33,8 +33,10 @@ The way I deploy is to
 * zip the project up
 * sftp the zip file to the web server
 * unzip the file into a directory in /opt
+* fix public/js/app.js websocket links to point to correct server
 * add an upstart conf for the server
 * start the server using upstart
+
 
 
 ### /etc/init/cards.conf
